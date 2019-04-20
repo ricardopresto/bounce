@@ -41,9 +41,8 @@
       let x = 60;
       let y = 80;
       let r = 7;
-      let xDir = 3;
-      let yDir = 3;
-      let index = 100;
+      let xDir = 2;
+      let yDir = 2;
       let i = 0.3939;
 
       ctx.beginPath();
@@ -67,6 +66,7 @@
       }
 
       function drawBricks() {
+        let index = 100;
         for (n = 10; n < 550; n = n + 53) {
           ctx.beginPath();
           ctx.fillStyle = `rgba(0,255,0,${i})`;
@@ -138,6 +138,7 @@
           }
           if (check(x, y, r).below.includes("0,255,0")) {
             hitBrick(check(x, y, r).below);
+            yDir = yDir * -1;
           }
         }
         if (yDir < 0) {
@@ -146,6 +147,7 @@
           }
           if (check(x, y, r).above.includes("0,255,0")) {
             hitBrick(check(x, y, r).above);
+            yDir = yDir * -1;
           }
         }
         if (xDir < 0) {
@@ -154,6 +156,7 @@
           }
           if (check(x, y, r).left.includes("0,255,0")) {
             hitBrick(check(x, y, r).left);
+            xDir = xDir * -1;
           }
         }
         if (xDir > 0) {
@@ -162,6 +165,7 @@
           }
           if (check(x, y, r).right.includes("0,255,0")) {
             hitBrick(check(x, y, r).right);
+            xDir = xDir * -1;
           }
         }
       }
@@ -176,12 +180,11 @@
             });
           }
         }
-        yDir = 2;
       }
 
       drawBricks();
 
-      //setInterval(moveBall, 0);
+      setInterval(moveBall, 0);
       //
     </script>
   </body>
