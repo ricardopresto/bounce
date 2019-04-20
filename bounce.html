@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+  <head> </head>
+  <body>
+    <div id="container">
+      <canvas
+        id="canvas1"
+        width="600"
+        height="600"
+        style="border: 1px solid #000"
+      ></canvas>
+      <canvas
+        id="canvas2"
+        width="600"
+        height="600"
+        style="border: 1px solid #000"
+      ></canvas>
+    </div>
+
+    <style>
+      div {
+        position: relative;
+      }
+      canvas {
+        position: absolute;
+      }
+      #canvas1 {
+        z-index: -1;
+      }
+      #canvas2 {
+        z-index: 0;
+      }
+    </style>
+
+    <script>
+      let c1 = document.getElementById("canvas1");
+      let ctxB = c1.getContext("2d");
+      let c2 = document.getElementById("canvas2");
+      let ctx = c2.getContext("2d");
+
+      let x = 60;
+      let y = 80;
+      let r = 7;
+      let xDir = 2;
+      let yDir = 2;
+      let index = 100;
+      let i = 0.3939;
+
+      ctx.beginPath();
+      ctx.strokeStyle = "#f00";
+      ctx.lineWidth = "6";
+      ctx.moveTo(0, 0);
+      ctx.lineTo(0, 600);
+      ctx.lineTo(600, 600);
+      ctx.lineTo(600, 0);
+      ctx.closePath();
+      ctx.stroke();
+
+      let bricks = [];
+      function Brick(x, y, width, height, index, hit = false) {
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
+        this.index = index;
+        this.hit = hit;
+      }
+
+      function drawBricks() {
+        for (n = 10; n < 550; n = n + 53) {
+          ctx.beginPath();
+          ctx.fillStyle = `rgba(0,255,0,${i})`;
+          ctx.lineWidth = "3";
+          ctx.moveTo(n, 20);
+          ctx.lineTo(n + 50, 20);
+          ctx.lineTo(n + 50, 40);
+          ctx.lineTo(n, 40);
+          ctx.closePath();
+          ctx.fill();
+          i = i + 0.0039;
+          console.log(ctx.getImageData(n, 20, 1, 1).data);
+          let b = new Brick();
+          b.x = n;
+          b.y = 20;
+          b.width = 50;
+          b.height = 20;
+          b.index = index;
+          bricks.push(b);
+          index = index + 1;
+        }
+      }
+
+      ctxB.beginPath();
+      ctxB.fillStyle = "#00f";
+      ctxB.arc(x, y, r, 0, 2 * Math.PI);
+      ctxB.fill();
+
+      function check(x, y, r) {
+        let left = ctx.getImageData(x - r, y, 1, 1).data;
+        let right = ctx.getImageData(x + r, y, 1, 1).data;
+
+        let d = ctx.getImageData(x - r / 2, y - (r + 1), r, 1).data;
+        let above = [];
+        for (n = 0; n < d.length; n = n + 4) {
+          above.push(d.slice(n, n + 3).toString());
+          above.push(d.slice(n + 3, n + 4).toString());
+        }
+        let below = ctx.getImageData(x, y + r, 1, 1).data;
+        return { left, right, above, below };
+      }
+
+      function moveBall() {
+        ctxB.beginPath();
+        ctxB.clearRect(x - r, y - r, r * 2, r * 2);
+        x = x + xDir;
+        y = y + yDir;
+        ctxB.beginPath();
+        ctxB.fillStyle = "#00f";
+        ctxB.arc(x, y, r, 0, 2 * Math.PI);
+        ctxB.fill();
+
+        if (yDir > 0) {
+          if (check(x, y, r).below.toString() == "255,0,0,255") {
+            yDir = -2;
+          }
+        }
+        if (yDir < 0) {
+          if (check(x, y, r).above.includes("255,0,0")) {
+            yDir = 2;
+          }
+        }
+        if (xDir < 0) {
+          if (check(x, y, r).left.toString() == "255,0,0,255") {
+            xDir = 2;
+          }
+        }
+        if (xDir > 0) {
+          if (check(x, y, r).right.toString() == "255,0,0,255") {
+            xDir = -2;
+          }
+        }
+
+        if (check(x, y, r).above.includes("0,255,0")) {
+          hitBrick(check(x, y, r).above);
+        }
+      }
+
+      function hitBrick(checkArray) {
+        console.log(checkArray);
+        for (brick of bricks) {
+          if (checkArray.includes(`${brick.index}`)) {
+            ctx.clearRect(brick.x, brick.y, brick.width, brick.height);
+            brick.hit = true;
+            bricks = bricks.filter(function(b) {
+              return b.hit == false;
+            });
+            console.log(bricks);
+          }
+        }
+        yDir = 2;
+      }
+
+      drawBricks();
+
+      //setInterval(moveBall, 0);
+      //
+    </script>
+  </body>
+</html>
