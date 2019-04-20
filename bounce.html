@@ -99,13 +99,18 @@
         let left = ctx.getImageData(x - r, y, 1, 1).data;
         let right = ctx.getImageData(x + r, y, 1, 1).data;
 
-        let d = ctx.getImageData(x - r / 2, y - (r + 1), r, 1).data;
+        let aboveData = ctx.getImageData(x - r / 2, y - (r + 1), r, 1).data;
         let above = [];
-        for (n = 0; n < d.length; n = n + 4) {
-          above.push(d.slice(n, n + 3).toString());
-          above.push(d.slice(n + 3, n + 4).toString());
+        for (n = 0; n < aboveData.length; n = n + 4) {
+          above.push(aboveData.slice(n, n + 3).toString());
+          above.push(aboveData.slice(n + 3, n + 4).toString());
         }
-        let below = ctx.getImageData(x, y + r, 1, 1).data;
+        let belowData = ctx.getImageData(x - r / 2, y + (r + 1), r, 1).data;
+        let below = [];
+        for (n = 0; n < belowData.length; n = n + 4) {
+          below.push(belowData.slice(n, n + 3).toString());
+          below.push(belowData.slice(n + 3, n + 4).toString());
+        }
         return { left, right, above, below };
       }
 
@@ -120,28 +125,27 @@
         ctxB.fill();
 
         if (yDir > 0) {
-          if (check(x, y, r).below.toString() == "255,0,0,255") {
-            yDir = -2;
+          if (check(x, y, r).below.includes("255,0,0")) {
+            yDir = yDir * -1;
           }
         }
         if (yDir < 0) {
           if (check(x, y, r).above.includes("255,0,0")) {
-            yDir = 2;
+            yDir = yDir * -1;
+          }
+          if (check(x, y, r).above.includes("0,255,0")) {
+            hitBrick(check(x, y, r).above);
           }
         }
         if (xDir < 0) {
           if (check(x, y, r).left.toString() == "255,0,0,255") {
-            xDir = 2;
+            xDir = xDir * -1;
           }
         }
         if (xDir > 0) {
           if (check(x, y, r).right.toString() == "255,0,0,255") {
-            xDir = -2;
+            xDir = xDir * -1;
           }
-        }
-
-        if (check(x, y, r).above.includes("0,255,0")) {
-          hitBrick(check(x, y, r).above);
         }
       }
 
