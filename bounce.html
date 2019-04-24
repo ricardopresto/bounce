@@ -30,6 +30,9 @@
       #canvas2 {
         z-index: 0;
       }
+      #container {
+        cursor: none;
+      }
     </style>
 
     <script>
@@ -39,11 +42,16 @@
       let ctx = c2.getContext("2d");
 
       let x = 60;
-      let y = 80;
+      let y = 200;
       let r = 7;
       let xDir = 2;
       let yDir = 2;
-      let i = 0.3939;
+      let rows = 6;
+      let rowHeight = 20;
+      let wallTop = 50;
+      let batX = 200;
+
+      document.addEventListener("mousemove", batMove);
 
       ctx.beginPath();
       ctx.strokeStyle = "#f00";
@@ -67,25 +75,27 @@
 
       function drawBricks() {
         let index = 100;
-        for (n = 10; n < 550; n = n + 53) {
-          ctx.beginPath();
-          ctx.fillStyle = `rgba(0,255,0,${i})`;
-          ctx.lineWidth = "3";
-          ctx.moveTo(n, 20);
-          ctx.lineTo(n + 50, 20);
-          ctx.lineTo(n + 50, 40);
-          ctx.lineTo(n, 40);
-          ctx.closePath();
-          ctx.fill();
-          i = i + 0.0039;
-          let b = new Brick();
-          b.x = n;
-          b.y = 20;
-          b.width = 50;
-          b.height = 20;
-          b.index = index;
-          bricks.push(b);
-          index = index + 1;
+        let i = 0.3939;
+        for (row = 0; row < rows; row++) {
+          for (n = 10; n < 550; n = n + 53) {
+            ctx.beginPath();
+            ctx.fillStyle = `rgba(0,255,0,${i})`;
+            ctx.moveTo(n, wallTop + row * rowHeight + 3);
+            ctx.lineTo(n + 50, wallTop + row * rowHeight + 3);
+            ctx.lineTo(n + 50, wallTop + row * rowHeight + rowHeight);
+            ctx.lineTo(n, wallTop + row * rowHeight + rowHeight);
+            ctx.closePath();
+            ctx.fill();
+            i = i + 0.0039;
+            let b = new Brick();
+            b.x = n;
+            b.y = wallTop + row * rowHeight + 3;
+            b.width = 50;
+            b.height = rowHeight;
+            b.index = index;
+            bricks.push(b);
+            index = index + 1;
+          }
         }
       }
 
@@ -123,6 +133,7 @@
       }
 
       function moveBall() {
+        drawBat();
         ctxB.beginPath();
         ctxB.clearRect(x - r, y - r, r * 2, r * 2);
         x = x + xDir;
@@ -136,6 +147,13 @@
           if (check(x, y, r).below.includes("255,0,0")) {
             yDir = yDir * -1;
           }
+          if (check(x, y, r).below.includes("153") && xDir > 0) {
+            xDir = xDir * -1;
+          }
+          if (check(x, y, r).below.includes("179") && xDir < 0) {
+            xDir = xDir * -1;
+          }
+
           if (check(x, y, r).below.includes("0,255,0")) {
             hitBrick(check(x, y, r).below);
             yDir = yDir * -1;
@@ -182,7 +200,40 @@
         }
       }
 
+      function drawBat() {
+        ctx.clearRect(3, 562, 594, 16);
+        ctx.lineWidth = "15";
+
+        ctx.beginPath();
+        ctx.moveTo(batX, 570);
+        ctx.strokeStyle = "rgba(255,0,0,0.6)";
+        ctx.lineCap = "round";
+        ctx.lineTo(batX + 30, 570);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(batX + 70, 570);
+        ctx.strokeStyle = "rgba(255,0,0,0.7)";
+        ctx.lineCap = "round";
+        ctx.lineTo(batX + 100, 570);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(batX + 10, 570);
+        ctx.strokeStyle = "rgba(255,0,0,1)";
+        ctx.lineCap = "butt";
+        ctx.lineTo(batX + 90, 570);
+        ctx.stroke();
+      }
+
+      function batMove(event) {
+        if (event.clientX > 6 && event.clientX < 494) {
+          batX = event.clientX;
+        }
+      }
+
       drawBricks();
+      drawBat();
 
       //setInterval(moveBall, 0);
       //
