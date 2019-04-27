@@ -8,23 +8,15 @@ let c3 = document.getElementById("canvas3");
 let ctxTop = c3.getContext("2d");
 
 let x = 60;
-let y = 200;
+let y = 250;
 let r = 6;
-let xDir = 1;
-let yDir = 1;
-let rows = 6;
+let xDir = 2;
+let yDir = 2;
+let rows = 8;
 let brickWidth = (c1.width - 8) / 12;
 let brickHeight = 20;
 let wallTop = 50;
 let batX = 200;
-
-let color = {
-  main: `hsl(200, 100%, 40%)`,
-  left: `hsl(200, 100%, 60%)`,
-  top: `hsl(200, 100%, 70%)`,
-  right: `hsl(200, 100%, 30%)`,
-  bottom: `hsl(200, 100%, 20%)`
-};
 
 document.addEventListener("mousemove", batMove);
 
@@ -52,6 +44,13 @@ function drawBricks() {
   let index = 1;
   let i = 0.00392;
   for (let row = 0; row < rows; row++) {
+    let color = {
+      main: `hsl(${row * 30}, 100%, 40%)`,
+      left: `hsl(${row * 30}, 100%, 60%)`,
+      top: `hsl(${row * 30}, 100%, 70%)`,
+      right: `hsl(${row * 30}, 100%, 30%)`,
+      bottom: `hsl(${row * 30}, 100%, 20%)`
+    };
     for (let n = 4; n < 550; n = n + brickWidth) {
       ctx.fillStyle = `rgba(0,255,0,${i})`;
       drawHiddenBrick(n, row, index);
@@ -196,6 +195,11 @@ function hitBrick(checkArray) {
       });
     }
   }
+  if (bricks.length == 0) {
+    x = 60;
+    y = 250;
+    drawBricks();
+  }
 }
 
 function drawBat() {
@@ -224,4 +228,4 @@ drawBricks();
 drawBat();
 drawBall();
 
-setInterval(moveBall, 0);
+//setInterval(moveBall, 0);
