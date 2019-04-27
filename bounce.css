@@ -1,18 +1,32 @@
-div {
-  position: relative;
+#window {
+  width: 100vw;
+  height: 100vh;
+  left: 0;
+  top: 0;
+  background-color: black;
+  z-index: -1;
+  position: absolute;
 }
 canvas {
   position: absolute;
 }
 #canvas1 {
-  z-index: -1;
-}
-#canvas2 {
   z-index: 0;
 }
-#canvas3 {
+#canvas2 {
   z-index: 1;
+}
+#canvas3 {
+  z-index: 2;
 }
 #container {
   cursor: none;
+  width: 600px;
+  height: 600px;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: auto;
 }

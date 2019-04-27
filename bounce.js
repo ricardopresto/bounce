@@ -18,7 +18,7 @@ let brickHeight = 20;
 let wallTop = 50;
 let batX = 200;
 
-document.addEventListener("mousemove", batMove);
+c3.addEventListener("mousemove", batMove);
 
 ctx.beginPath();
 ctx.strokeStyle = "#f00";
@@ -85,7 +85,7 @@ function drawHiddenBrick(n, row) {
   ctx.closePath();
   ctx.fill();
   ctx.beginPath();
-  ctx.strokeStyle = "white";
+  ctx.strokeStyle = "black";
   ctx.lineWidth = "1";
   ctx.moveTo(n, wallTop + row * brickHeight);
   ctx.lineTo(n + brickWidth, wallTop + row * brickHeight);
@@ -97,7 +97,7 @@ function drawHiddenBrick(n, row) {
 
 function drawBall() {
   ctxB.beginPath();
-  ctxB.fillStyle = "#00f";
+  ctxB.fillStyle = "#fff";
   ctxB.arc(x, y, r, 0, 2 * Math.PI);
   ctxB.fill();
 }
@@ -141,11 +141,11 @@ function moveBall() {
   if (yDir > 0) {
     if (check(x, y, r).below.includes("255,0,0")) {
       yDir = yDir * -1;
-      if (x > batX - r && x < batX + r * 2 && xDir > 0) {
+      if (x > batX - 50 - r && x < batX - 50 + r && xDir > 0) {
         xDir = xDir * -1;
         return;
       }
-      if (x > batX + 100 - r * 2 && x < batX + 100 + r && xDir < 0) {
+      if (x > batX + 50 - r && x < batX + 50 + r && xDir < 0) {
         xDir = xDir * -1;
         return;
       }
@@ -205,24 +205,30 @@ function hitBrick(checkArray) {
 function drawBat() {
   ctx.clearRect(3, 562, 594, 16);
   ctx.lineWidth = "15";
+  ctxTop.clearRect(3, 562, 594, 16);
+  ctxTop.lineWidth = "15";
 
   ctx.beginPath();
-  ctx.moveTo(batX, 570);
+  ctx.moveTo(batX - 50, 570);
   ctx.strokeStyle = "rgb(255,0,0)";
   ctx.lineCap = "round";
-  ctx.lineTo(batX + 100, 570);
+  ctx.lineTo(batX + 50, 570);
   ctx.stroke();
+  ctxTop.beginPath();
+  ctxTop.moveTo(batX - 50, 570);
+  ctxTop.strokeStyle = "rgb(255,255,255)";
+  ctxTop.lineCap = "round";
+  ctxTop.lineTo(batX + 50, 570);
+  ctxTop.stroke();
 }
 
-function batMove(event) {
-  if (event.clientX > 6 && event.clientX < 494) {
-    batX = event.clientX;
+function batMove(e) {
+  let rect = e.target.getBoundingClientRect();
+  let mouseX = e.clientX - rect.left;
+  if (mouseX > 60 && mouseX < 540) {
+    batX = mouseX;
   }
 }
-
-c2.addEventListener("click", e => {
-  console.log(ctx.getImageData(e.clientX + 10, e.clientY + 10, 1, 1).data);
-});
 
 drawBricks();
 drawBat();
