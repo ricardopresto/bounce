@@ -8,8 +8,9 @@ let c3 = document.getElementById("canvas3");
 let ctxTop = c3.getContext("2d");
 
 let container = document.getElementById("container");
-container.style.width = "65%";
+container.style.width = "60%";
 container.style.height = "90%";
+console.log(container.clientWidth);
 container.style.top = "0";
 container.style.bottom = "0";
 container.style.left = "0";
@@ -24,7 +25,7 @@ c2.style.height = "100%";
 c3.style.height = "100%";
 
 let x = 60;
-let y = 250;
+let y = 300;
 let r = 6;
 let xDir = 2;
 let yDir = 2;
@@ -149,7 +150,7 @@ function check(x, y, r) {
 function moveBall() {
   drawBat();
   ctxB.beginPath();
-  ctxB.clearRect(x - r, y - r, r * 2, r * 2);
+  ctxB.clearRect(0, 0, c3.width, c3.height);
   x = x + xDir;
   y = y + yDir;
   drawBall();
@@ -220,7 +221,7 @@ function hitBrick(checkArray) {
 
 function drawBat() {
   ctx.clearRect(3, 562, 594, 16);
-  ctx.lineWidth = "15";
+  ctx.lineWidth = `${c3.height} * 0.025`;
   ctxTop.clearRect(3, 562, 594, 16);
   ctxTop.lineWidth = "15";
 
@@ -239,23 +240,25 @@ function drawBat() {
 }
 
 function batMove(e) {
-  let rect = e.target.getBoundingClientRect();
-  console.log(rect);
-  let mouseX = e.clientX - rect.left;
-  if (mouseX <= 3) {
-    return;
+  let mouseX = getMousePos(c3, e).x;
+  if (mouseX > 12 && mouseX < 488) {
+    batX = mouseX + 50;
   }
-  if (mouseX < batX && !check(batX - 55, 570, r).left.includes("255,0,0")) {
-    batX = mouseX;
-  }
+}
 
-  if (mouseX > batX && !check(batX + 55, 570, r).right.includes("255,0,0")) {
-    batX = mouseX;
-  }
+function getMousePos(canvas, evt) {
+  var rect = canvas.getBoundingClientRect(),
+    scaleX = canvas.width / rect.width,
+    scaleY = canvas.height / rect.height;
+
+  return {
+    x: (evt.clientX - rect.left) * scaleX,
+    y: (evt.clientY - rect.top) * scaleY
+  };
 }
 
 drawBricks();
 drawBat();
 drawBall();
 
-//setInterval(moveBall, 0);
+setInterval(moveBall, 0);
