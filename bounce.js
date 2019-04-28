@@ -7,6 +7,22 @@ let ctx = c2.getContext("2d");
 let c3 = document.getElementById("canvas3");
 let ctxTop = c3.getContext("2d");
 
+let container = document.getElementById("container");
+container.style.width = "65%";
+container.style.height = "90%";
+container.style.top = "0";
+container.style.bottom = "0";
+container.style.left = "0";
+container.style.right = "0";
+container.style.margin = "auto";
+
+c1.style.width = "100%";
+c2.style.width = "100%";
+c3.style.width = "100%";
+c1.style.height = "100%";
+c2.style.height = "100%";
+c3.style.height = "100%";
+
 let x = 60;
 let y = 250;
 let r = 6;
@@ -224,8 +240,16 @@ function drawBat() {
 
 function batMove(e) {
   let rect = e.target.getBoundingClientRect();
+  console.log(rect);
   let mouseX = e.clientX - rect.left;
-  if (mouseX > 60 && mouseX < 540) {
+  if (mouseX <= 3) {
+    return;
+  }
+  if (mouseX < batX && !check(batX - 55, 570, r).left.includes("255,0,0")) {
+    batX = mouseX;
+  }
+
+  if (mouseX > batX && !check(batX + 55, 570, r).right.includes("255,0,0")) {
     batX = mouseX;
   }
 }
