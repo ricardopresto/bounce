@@ -10,7 +10,6 @@ let ctxTop = c3.getContext("2d");
 let container = document.getElementById("container");
 container.style.width = "60%";
 container.style.height = "90%";
-console.log(container.clientWidth);
 container.style.top = "0";
 container.style.bottom = "0";
 container.style.left = "0";
@@ -36,6 +35,13 @@ let wallTop = 50;
 let batX = 200;
 
 c3.addEventListener("mousemove", batMove);
+
+let beep = document.getElementById("beep");
+beep.src = "beep.mp3";
+
+function beepPlay() {
+  beep.play();
+}
 
 ctx.beginPath();
 ctx.strokeStyle = "#f00";
@@ -202,6 +208,7 @@ function moveBall() {
 }
 
 function hitBrick(checkArray) {
+  //beepPlay();
   for (let brick of bricks) {
     if (checkArray.includes(`${brick.index}`)) {
       ctx.clearRect(brick.x, brick.y, brick.width, brick.height);
@@ -261,4 +268,4 @@ drawBricks();
 drawBat();
 drawBall();
 
-setInterval(moveBall, 0);
+//setInterval(moveBall, 0);
