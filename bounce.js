@@ -26,8 +26,8 @@ c3.style.height = "100%";
 let x = 60;
 let y = 300;
 let r = 6;
-let xDir = 2;
-let yDir = 2;
+let xDir = 2.5;
+let yDir = 2.5;
 let rows = 8;
 let brickWidth = (c1.width - 8) / 12;
 let brickHeight = 20;
@@ -36,11 +36,17 @@ let batX = 200;
 
 c3.addEventListener("mousemove", batMove);
 
-let beep = document.getElementById("beep");
-beep.src = "beep.mp3";
+let beep1 = document.getElementById("beep1");
+let beep2 = document.getElementById("beep2");
 
-function beepPlay() {
-  beep.play();
+function beep1Play() {
+  beep1.currentTime = 0;
+  beep1.play();
+}
+
+function beep2Play() {
+  beep2.currentTime = 0;
+  beep2.play();
 }
 
 ctx.beginPath();
@@ -126,25 +132,25 @@ function drawBall() {
 }
 
 function check(x, y, r) {
-  let leftData = ctx.getImageData(x - (r + 1), y - r / 2, 1, r).data;
+  let leftData = ctx.getImageData(x - (r + 1), y - 2, 1, 4).data;
   let left = [];
   for (let n = 0; n < leftData.length; n = n + 4) {
     left.push(leftData.slice(n, n + 3).toString());
     left.push(leftData.slice(n + 3, n + 4).toString());
   }
-  let rightData = ctx.getImageData(x + (r + 1), y - r / 2, 1, r).data;
+  let rightData = ctx.getImageData(x + (r + 1), y - 2, 1, 4).data;
   let right = [];
   for (let n = 0; n < rightData.length; n = n + 4) {
     right.push(rightData.slice(n, n + 3).toString());
     right.push(rightData.slice(n + 3, n + 4).toString());
   }
-  let aboveData = ctx.getImageData(x - r / 2, y - (r + 1), r, 1).data;
+  let aboveData = ctx.getImageData(x - 2, y - (r + 1), 4, 1).data;
   let above = [];
   for (let n = 0; n < aboveData.length; n = n + 4) {
     above.push(aboveData.slice(n, n + 3).toString());
     above.push(aboveData.slice(n + 3, n + 4).toString());
   }
-  let belowData = ctx.getImageData(x - r / 2, y + (r + 1), r, 1).data;
+  let belowData = ctx.getImageData(x - 2, y + (r + 1), 4, 1).data;
   let below = [];
   for (let n = 0; n < belowData.length; n = n + 4) {
     below.push(belowData.slice(n, n + 3).toString());
@@ -163,6 +169,7 @@ function moveBall() {
 
   if (yDir > 0) {
     if (check(x, y, r).below.includes("255,0,0")) {
+      beep1Play();
       yDir = yDir * -1;
       if (x > batX - 50 - r && x < batX - 50 + r && xDir > 0) {
         xDir = xDir * -1;
@@ -208,7 +215,7 @@ function moveBall() {
 }
 
 function hitBrick(checkArray) {
-  //beepPlay();
+  beep2Play();
   for (let brick of bricks) {
     if (checkArray.includes(`${brick.index}`)) {
       ctx.clearRect(brick.x, brick.y, brick.width, brick.height);
@@ -268,4 +275,4 @@ drawBricks();
 drawBat();
 drawBall();
 
-//setInterval(moveBall, 0);
+setInterval(moveBall, 0);
