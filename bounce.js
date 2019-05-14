@@ -53,7 +53,7 @@ function drawBricks() {
     };
     for (let n = 4; n < 550; n = n + brickWidth) {
       ctx.fillStyle = `rgba(0,255,0,${i})`;
-      drawHiddenBrick(n, row, index);
+      drawHiddenBrick(n, row);
       drawBrick(
         ctxTop,
         n,
