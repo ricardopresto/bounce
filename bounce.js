@@ -7,18 +7,47 @@ let ctx = c2.getContext("2d");
 let c3 = document.getElementById("canvas3");
 let ctxTop = c3.getContext("2d");
 
+let container = document.getElementById("container");
+container.style.width = "60%";
+container.style.height = "90%";
+container.style.top = "0";
+container.style.bottom = "0";
+container.style.left = "0";
+container.style.right = "0";
+container.style.margin = "auto";
+
+c1.style.width = "100%";
+c2.style.width = "100%";
+c3.style.width = "100%";
+c1.style.height = "100%";
+c2.style.height = "100%";
+c3.style.height = "100%";
+
 let x = 60;
-let y = 250;
+let y = 300;
 let r = 6;
-let xDir = 2;
-let yDir = 2;
+let xDir = 2.5;
+let yDir = 2.5;
 let rows = 8;
 let brickWidth = (c1.width - 8) / 12;
 let brickHeight = 20;
 let wallTop = 50;
 let batX = 200;
 
-document.addEventListener("mousemove", batMove);
+c3.addEventListener("mousemove", batMove);
+
+let beep1 = document.getElementById("beep1");
+let beep2 = document.getElementById("beep2");
+
+function beep1Play() {
+  beep1.currentTime = 0;
+  beep1.play();
+}
+
+function beep2Play() {
+  beep2.currentTime = 0;
+  beep2.play();
+}
 
 ctx.beginPath();
 ctx.strokeStyle = "#f00";
@@ -85,7 +114,7 @@ function drawHiddenBrick(n, row) {
   ctx.closePath();
   ctx.fill();
   ctx.beginPath();
-  ctx.strokeStyle = "white";
+  ctx.strokeStyle = "black";
   ctx.lineWidth = "1";
   ctx.moveTo(n, wallTop + row * brickHeight);
   ctx.lineTo(n + brickWidth, wallTop + row * brickHeight);
@@ -97,31 +126,31 @@ function drawHiddenBrick(n, row) {
 
 function drawBall() {
   ctxB.beginPath();
-  ctxB.fillStyle = "#00f";
+  ctxB.fillStyle = "#fff";
   ctxB.arc(x, y, r, 0, 2 * Math.PI);
   ctxB.fill();
 }
 
 function check(x, y, r) {
-  let leftData = ctx.getImageData(x - (r + 1), y - r / 2, 1, r).data;
+  let leftData = ctx.getImageData(x - (r + 1), y - 2, 1, 4).data;
   let left = [];
   for (let n = 0; n < leftData.length; n = n + 4) {
     left.push(leftData.slice(n, n + 3).toString());
     left.push(leftData.slice(n + 3, n + 4).toString());
   }
-  let rightData = ctx.getImageData(x + (r + 1), y - r / 2, 1, r).data;
+  let rightData = ctx.getImageData(x + (r + 1), y - 2, 1, 4).data;
   let right = [];
   for (let n = 0; n < rightData.length; n = n + 4) {
     right.push(rightData.slice(n, n + 3).toString());
     right.push(rightData.slice(n + 3, n + 4).toString());
   }
-  let aboveData = ctx.getImageData(x - r / 2, y - (r + 1), r, 1).data;
+  let aboveData = ctx.getImageData(x - 2, y - (r + 1), 4, 1).data;
   let above = [];
   for (let n = 0; n < aboveData.length; n = n + 4) {
     above.push(aboveData.slice(n, n + 3).toString());
     above.push(aboveData.slice(n + 3, n + 4).toString());
   }
-  let belowData = ctx.getImageData(x - r / 2, y + (r + 1), r, 1).data;
+  let belowData = ctx.getImageData(x - 2, y + (r + 1), 4, 1).data;
   let below = [];
   for (let n = 0; n < belowData.length; n = n + 4) {
     below.push(belowData.slice(n, n + 3).toString());
@@ -133,19 +162,20 @@ function check(x, y, r) {
 function moveBall() {
   drawBat();
   ctxB.beginPath();
-  ctxB.clearRect(x - r, y - r, r * 2, r * 2);
+  ctxB.clearRect(0, 0, c3.width, c3.height);
   x = x + xDir;
   y = y + yDir;
   drawBall();
 
   if (yDir > 0) {
     if (check(x, y, r).below.includes("255,0,0")) {
+      beep1Play();
       yDir = yDir * -1;
-      if (x > batX - r && x < batX + r * 2 && xDir > 0) {
+      if (x > batX - 50 - r && x < batX - 50 + r && xDir > 0) {
         xDir = xDir * -1;
         return;
       }
-      if (x > batX + 100 - r * 2 && x < batX + 100 + r && xDir < 0) {
+      if (x > batX + 50 - r && x < batX + 50 + r && xDir < 0) {
         xDir = xDir * -1;
         return;
       }
@@ -185,6 +215,7 @@ function moveBall() {
 }
 
 function hitBrick(checkArray) {
+  beep2Play();
   for (let brick of bricks) {
     if (checkArray.includes(`${brick.index}`)) {
       ctx.clearRect(brick.x, brick.y, brick.width, brick.height);
@@ -204,28 +235,44 @@ function hitBrick(checkArray) {
 
 function drawBat() {
   ctx.clearRect(3, 562, 594, 16);
-  ctx.lineWidth = "15";
+  ctx.lineWidth = `${c3.height} * 0.025`;
+  ctxTop.clearRect(3, 562, 594, 16);
+  ctxTop.lineWidth = "15";
 
   ctx.beginPath();
-  ctx.moveTo(batX, 570);
+  ctx.moveTo(batX - 50, 570);
   ctx.strokeStyle = "rgb(255,0,0)";
   ctx.lineCap = "round";
-  ctx.lineTo(batX + 100, 570);
+  ctx.lineTo(batX + 50, 570);
   ctx.stroke();
+  ctxTop.beginPath();
+  ctxTop.moveTo(batX - 50, 570);
+  ctxTop.strokeStyle = "rgb(255,255,255)";
+  ctxTop.lineCap = "round";
+  ctxTop.lineTo(batX + 50, 570);
+  ctxTop.stroke();
 }
 
-function batMove(event) {
-  if (event.clientX > 6 && event.clientX < 494) {
-    batX = event.clientX;
+function batMove(e) {
+  let mouseX = getMousePos(c3, e).x;
+  if (mouseX > 12 && mouseX < 488) {
+    batX = mouseX + 50;
   }
 }
 
-c2.addEventListener("click", e => {
-  console.log(ctx.getImageData(e.clientX + 10, e.clientY + 10, 1, 1).data);
-});
+function getMousePos(canvas, evt) {
+  var rect = canvas.getBoundingClientRect(),
+    scaleX = canvas.width / rect.width,
+    scaleY = canvas.height / rect.height;
+
+  return {
+    x: (evt.clientX - rect.left) * scaleX,
+    y: (evt.clientY - rect.top) * scaleY
+  };
+}
 
 drawBricks();
 drawBat();
 drawBall();
 
-//setInterval(moveBall, 0);
+setInterval(moveBall, 0);
