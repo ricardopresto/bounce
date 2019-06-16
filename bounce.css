@@ -1,25 +1,62 @@
-#window {
+* {
+  margin: 0;
+  padding: 0;
+}
+
+div {
+  border: 1px solid red;
+}
+
+#surround {
   width: 100vw;
   height: 100vh;
   left: 0;
   top: 0;
-  background-color: black;
+  background-color: #fff;
   z-index: -1;
-  position: absolute;
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: center;
 }
+
+#buttons {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+button {
+  width: 100px;
+  height: 100px;
+  margin: 20px;
+  font-size: 2rem;
+}
+
+#start {
+  align-self: center;
+}
+
+#sound {
+  align-self: center;
+}
+
+#container {
+  cursor: none;
+  position: relative;
+}
+
 canvas {
   position: absolute;
 }
+
 #canvas1 {
   z-index: 0;
 }
+
 #canvas2 {
   z-index: 1;
 }
+
 #canvas3 {
   z-index: 2;
-}
-#container {
-  cursor: none;
-  position: absolute;
 }
