@@ -1,38 +1,53 @@
 import { drawBrick } from "./drawBrick.js";
 
-let c1 = document.getElementById("canvas1");
-let ctxB = c1.getContext("2d");
-let c2 = document.getElementById("canvas2");
-let ctx = c2.getContext("2d");
-let c3 = document.getElementById("canvas3");
-let ctxTop = c3.getContext("2d");
+const c1 = document.getElementById("canvas1"),
+  ctxB = c1.getContext("2d"),
+  c2 = document.getElementById("canvas2"),
+  ctx = c2.getContext("2d"),
+  c3 = document.getElementById("canvas3"),
+  ctxTop = c3.getContext("2d"),
+  container = document.getElementById("container"),
+  buttons = document.getElementById("buttons"),
+  soundBtn = document.getElementById("sound"),
+  startbtn = document.getElementById("start"),
+  soundIcon = document.getElementById("soundIcon");
 
-let container = document.getElementById("container");
-container.style.width = "50%";
-container.style.height = "90%";
-container.style.top = "0";
-container.style.bottom = "0";
-container.style.left = "0";
-container.style.right = "0";
-container.style.margin = "auto";
+soundBtn.addEventListener("click", soundBtnClick);
 
-c1.style.width = "100%";
-c2.style.width = "100%";
-c3.style.width = "100%";
-c1.style.height = "100%";
-c2.style.height = "100%";
-c3.style.height = "100%";
+let size;
+
+const setSize = () => {
+  window.innerWidth > window.innerHeight
+    ? (size = window.innerHeight * 0.9)
+    : (size = window.innerWidth * 0.9);
+
+  container.style.width = container.style.height = `${size}px`;
+
+  c1.style.width = c2.style.width = c3.style.width = c1.style.height = c2.style.height = c3.style.height =
+    "100%";
+
+  if (window.innerWidth < size + 140) {
+    buttons.style.flexDirection = "row";
+  } else {
+    buttons.style.flexDirection = "column";
+  }
+};
+
+setSize();
+window.onresize = setSize;
 
 let x = 60;
 let y = 300;
 let r = 6;
-let xDir = 2;
-let yDir = 2;
-let rows = 8;
-let brickWidth = (c1.width - 8) / 12;
-let brickHeight = 20;
-let wallTop = 50;
+let xDir = 1;
+let yDir = 1;
+let rows = 9;
+let boundary = 14;
+let brickWidth = (600 - boundary * 2) / 12;
+let brickHeight = brickWidth / 2.4;
+let wallTop = brickHeight * 3;
 let batX = 200;
+let soundOn = true;
 
 c3.addEventListener("mousemove", batMove);
 
@@ -50,16 +65,32 @@ function beep2Play() {
 }
 
 ctx.beginPath();
-ctx.strokeStyle = "#f00";
+ctx.strokeStyle = "rgba(255, 0, 0, 1";
 ctx.lineWidth = "6";
-ctx.moveTo(0, 0);
-ctx.lineTo(0, 600);
-ctx.lineTo(600, 600);
-ctx.lineTo(600, 0);
-ctx.closePath();
+ctx.moveTo(boundary - 3, 600 - boundary * 2);
+ctx.lineTo(boundary - 3, boundary - 3);
+ctx.lineTo(600 - (boundary - 3), boundary - 3);
+ctx.lineTo(600 - (boundary - 3), 600 - boundary * 2);
 ctx.stroke();
 
+ctxTop.beginPath();
+ctxTop.strokeStyle = "rgba(255, 255, 255, 1)";
+ctxTop.lineCap = "round";
+ctxTop.lineWidth = boundary;
+ctxTop.moveTo(boundary / 2, 600 - boundary * 2);
+ctxTop.lineTo(boundary / 2, boundary / 2);
+ctxTop.stroke();
+ctxTop.beginPath();
+ctxTop.moveTo(boundary / 2, boundary / 2);
+ctxTop.lineTo(600 - boundary / 2, boundary / 2);
+ctxTop.stroke();
+ctxTop.beginPath();
+ctxTop.moveTo(600 - boundary / 2, boundary / 2);
+ctxTop.lineTo(600 - boundary / 2, 600 - boundary * 2);
+ctxTop.stroke();
+
 let bricks = [];
+
 function Brick(x, y, width, height, index, hit = false) {
   this.x = x;
   this.y = y;
@@ -80,7 +111,7 @@ function drawBricks() {
       right: `hsl(${row * 30}, 100%, 30%)`,
       bottom: `hsl(${row * 30}, 100%, 20%)`
     };
-    for (let n = 4; n < 550; n = n + brickWidth) {
+    for (let n = boundary; n < 600 - boundary * 2; n = n + brickWidth) {
       ctx.fillStyle = `rgba(0,255,0,${i})`;
       drawHiddenBrick(n, row);
       drawBrick(
@@ -114,7 +145,7 @@ function drawHiddenBrick(n, row) {
   ctx.closePath();
   ctx.fill();
   ctx.beginPath();
-  ctx.strokeStyle = "black";
+  ctx.strokeStyle = "#000";
   ctx.lineWidth = "1";
   ctx.moveTo(n, wallTop + row * brickHeight);
   ctx.lineTo(n + brickWidth, wallTop + row * brickHeight);
@@ -169,7 +200,7 @@ function moveBall() {
 
   if (yDir > 0) {
     if (check(x, y, r).below.includes("255,0,0")) {
-      beep1Play();
+      if (soundOn) beep1Play();
       yDir = yDir * -1;
       if (x > batX - 50 - r && x < batX - 50 + r && xDir > 0) {
         xDir = xDir * -1;
@@ -215,7 +246,7 @@ function moveBall() {
 }
 
 function hitBrick(checkArray) {
-  beep2Play();
+  if (soundOn) beep2Play();
   for (let brick of bricks) {
     if (checkArray.includes(`${brick.index}`)) {
       ctx.clearRect(brick.x, brick.y, brick.width, brick.height);
@@ -228,26 +259,26 @@ function hitBrick(checkArray) {
   }
   if (bricks.length == 0) {
     x = 60;
-    y = 250;
+    y = 300;
     drawBricks();
   }
 }
 
 function drawBat() {
-  ctx.clearRect(3, 562, 594, 16);
-  ctx.lineWidth = `${c3.height} * 0.025`;
-  ctxTop.clearRect(3, 562, 594, 16);
+  ctx.clearRect(brickHeight, 562, c1.width - brickHeight * 2, 16);
+  ctx.lineWidth = "13";
+  ctxTop.clearRect(brickHeight, 562, c1.width - brickHeight * 2, 16);
   ctxTop.lineWidth = "15";
 
   ctx.beginPath();
   ctx.moveTo(batX - 50, 570);
-  ctx.strokeStyle = "rgb(255,0,0)";
+  ctx.strokeStyle = "#f00";
   ctx.lineCap = "round";
   ctx.lineTo(batX + 50, 570);
   ctx.stroke();
   ctxTop.beginPath();
   ctxTop.moveTo(batX - 50, 570);
-  ctxTop.strokeStyle = "rgb(255,255,255)";
+  ctxTop.strokeStyle = "#fff";
   ctxTop.lineCap = "round";
   ctxTop.lineTo(batX + 50, 570);
   ctxTop.stroke();
@@ -255,7 +286,7 @@ function drawBat() {
 
 function batMove(e) {
   let mouseX = getMousePos(c3, e).x;
-  if (mouseX > 12 && mouseX < 488) {
+  if (mouseX > 29 && mouseX < 471) {
     batX = mouseX + 50;
   }
 }
@@ -269,6 +300,12 @@ function getMousePos(canvas, evt) {
     x: (evt.clientX - rect.left) * scaleX,
     y: (evt.clientY - rect.top) * scaleY
   };
+}
+
+function soundBtnClick() {
+  soundOn = !soundOn;
+  soundIcon.classList.toggle("fa-volume-up");
+  soundIcon.classList.toggle("fa-volume-mute");
 }
 
 drawBricks();
