@@ -8,7 +8,7 @@ let c3 = document.getElementById("canvas3");
 let ctxTop = c3.getContext("2d");
 
 let container = document.getElementById("container");
-container.style.width = "60%";
+container.style.width = "50%";
 container.style.height = "90%";
 container.style.top = "0";
 container.style.bottom = "0";
@@ -26,8 +26,8 @@ c3.style.height = "100%";
 let x = 60;
 let y = 300;
 let r = 6;
-let xDir = 2.5;
-let yDir = 2.5;
+let xDir = 2;
+let yDir = 2;
 let rows = 8;
 let brickWidth = (c1.width - 8) / 12;
 let brickHeight = 20;
@@ -275,4 +275,4 @@ drawBricks();
 drawBat();
 drawBall();
 
-setInterval(moveBall, 0);
+//setInterval(moveBall, 0);
