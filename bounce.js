@@ -181,9 +181,11 @@ function moveBall() {
   y = y + yDir;
   drawBall();
 
+  let checked = check(x, y, r);
+
   if (yDir > 0) {
-    if (check(x, y, r).below.includes("255,0,0")) {
-      beep1Play();
+    if (checked.below.includes("255,0,0")) {
+      soundOn ? beep1Play() : null;
       yDir = yDir * -1;
       if (x > batX - 50 - r && x < batX - 50 + r && xDir > 0) {
         xDir = xDir * -1;
@@ -194,34 +196,34 @@ function moveBall() {
         return;
       }
     }
-    if (check(x, y, r).below.includes("0,255,0")) {
+    if (checked.below.includes("0,255,0")) {
       hitBrick(check(x, y, r).below);
       yDir = yDir * -1;
     }
   }
   if (yDir < 0) {
-    if (check(x, y, r).above.includes("255,0,0")) {
+    if (checked.above.includes("255,0,0")) {
       yDir = yDir * -1;
     }
-    if (check(x, y, r).above.includes("0,255,0")) {
+    if (checked.above.includes("0,255,0")) {
       hitBrick(check(x, y, r).above);
       yDir = yDir * -1;
     }
   }
   if (xDir < 0) {
-    if (check(x, y, r).left.includes("255,0,0")) {
+    if (checked.left.includes("255,0,0")) {
       xDir = xDir * -1;
     }
-    if (check(x, y, r).left.includes("0,255,0")) {
+    if (checked.left.includes("0,255,0")) {
       hitBrick(check(x, y, r).left);
       xDir = xDir * -1;
     }
   }
   if (xDir > 0) {
-    if (check(x, y, r).right.includes("255,0,0")) {
+    if (checked.right.includes("255,0,0")) {
       xDir = xDir * -1;
     }
-    if (check(x, y, r).right.includes("0,255,0")) {
+    if (checked.right.includes("0,255,0")) {
       hitBrick(check(x, y, r).right);
       xDir = xDir * -1;
     }
@@ -229,7 +231,7 @@ function moveBall() {
 }
 
 function hitBrick(checkArray) {
-  beep2Play();
+  soundOn ? beep2Play() : null;
   for (let brick of bricks) {
     if (checkArray.includes(`${brick.index}`)) {
       ctx.clearRect(brick.x, brick.y, brick.width, brick.height);
