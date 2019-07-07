@@ -3,16 +3,16 @@
   padding: 0;
 }
 
-div {
+/* div {
   border: 1px solid red;
-}
+} */
 
 #surround {
   width: 100vw;
   height: 100vh;
   left: 0;
   top: 0;
-  background-color: #fff;
+  background-color: #000;
   z-index: -1;
   display: flex;
   flex-flow: row wrap;

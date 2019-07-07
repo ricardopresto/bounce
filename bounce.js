@@ -39,12 +39,13 @@ window.onresize = setSize;
 let x = 60;
 let y = 300;
 let r = 6;
-let xDir = 2.5;
-let yDir = 2.5;
-let rows = 8;
-let brickWidth = (c1.width - 8) / 12;
-let brickHeight = 20;
-let wallTop = 50;
+let xDir = 1;
+let yDir = 1;
+let rows = 9;
+let boundary = 14;
+let brickWidth = (600 - boundary * 2) / 12;
+let brickHeight = brickWidth / 2.4;
+let wallTop = brickHeight * 3;
 let batX = 200;
 let soundOn = true;
 
@@ -64,16 +65,32 @@ function beep2Play() {
 }
 
 ctx.beginPath();
-ctx.strokeStyle = "#f00";
+ctx.strokeStyle = "rgba(255, 0, 0, 1";
 ctx.lineWidth = "6";
-ctx.moveTo(0, 0);
-ctx.lineTo(0, 600);
-ctx.lineTo(600, 600);
-ctx.lineTo(600, 0);
-ctx.closePath();
+ctx.moveTo(boundary - 3, 600 - boundary * 2);
+ctx.lineTo(boundary - 3, boundary - 3);
+ctx.lineTo(600 - (boundary - 3), boundary - 3);
+ctx.lineTo(600 - (boundary - 3), 600 - boundary * 2);
 ctx.stroke();
 
+ctxTop.beginPath();
+ctxTop.strokeStyle = "rgba(255, 255, 255, 1)";
+ctxTop.lineCap = "round";
+ctxTop.lineWidth = boundary;
+ctxTop.moveTo(boundary / 2, 600 - boundary * 2);
+ctxTop.lineTo(boundary / 2, boundary / 2);
+ctxTop.stroke();
+ctxTop.beginPath();
+ctxTop.moveTo(boundary / 2, boundary / 2);
+ctxTop.lineTo(600 - boundary / 2, boundary / 2);
+ctxTop.stroke();
+ctxTop.beginPath();
+ctxTop.moveTo(600 - boundary / 2, boundary / 2);
+ctxTop.lineTo(600 - boundary / 2, 600 - boundary * 2);
+ctxTop.stroke();
+
 let bricks = [];
+
 function Brick(x, y, width, height, index, hit = false) {
   this.x = x;
   this.y = y;
@@ -94,9 +111,9 @@ function drawBricks() {
       right: `hsl(${row * 30}, 100%, 30%)`,
       bottom: `hsl(${row * 30}, 100%, 20%)`
     };
-    for (let n = 4; n < 550; n = n + brickWidth) {
+    for (let n = boundary; n < 600 - boundary * 2; n = n + brickWidth) {
       ctx.fillStyle = `rgba(0,255,0,${i})`;
-      drawHiddenBrick(n, row, index);
+      drawHiddenBrick(n, row);
       drawBrick(
         ctxTop,
         n,
@@ -128,7 +145,7 @@ function drawHiddenBrick(n, row) {
   ctx.closePath();
   ctx.fill();
   ctx.beginPath();
-  ctx.strokeStyle = "black";
+  ctx.strokeStyle = "#000";
   ctx.lineWidth = "1";
   ctx.moveTo(n, wallTop + row * brickHeight);
   ctx.lineTo(n + brickWidth, wallTop + row * brickHeight);
@@ -140,7 +157,7 @@ function drawHiddenBrick(n, row) {
 
 function drawBall() {
   ctxB.beginPath();
-  ctxB.fillStyle = "#000";
+  ctxB.fillStyle = "#fff";
   ctxB.arc(x, y, r, 0, 2 * Math.PI);
   ctxB.fill();
 }
@@ -244,26 +261,26 @@ function hitBrick(checkArray) {
   }
   if (bricks.length == 0) {
     x = 60;
-    y = 250;
+    y = 300;
     drawBricks();
   }
 }
 
 function drawBat() {
-  ctx.clearRect(3, 562, 594, 16);
-  ctx.lineWidth = `${c3.height} * 0.025`;
-  ctxTop.clearRect(3, 562, 594, 16);
+  ctx.clearRect(brickHeight, 562, c1.width - brickHeight * 2, 16);
+  ctx.lineWidth = "13";
+  ctxTop.clearRect(brickHeight, 562, c1.width - brickHeight * 2, 16);
   ctxTop.lineWidth = "15";
 
   ctx.beginPath();
   ctx.moveTo(batX - 50, 570);
-  ctx.strokeStyle = "rgb(255,0,0)";
+  ctx.strokeStyle = "#f00";
   ctx.lineCap = "round";
   ctx.lineTo(batX + 50, 570);
   ctx.stroke();
   ctxTop.beginPath();
   ctxTop.moveTo(batX - 50, 570);
-  ctxTop.strokeStyle = "#000";
+  ctxTop.strokeStyle = "#fff";
   ctxTop.lineCap = "round";
   ctxTop.lineTo(batX + 50, 570);
   ctxTop.stroke();
@@ -271,7 +288,7 @@ function drawBat() {
 
 function batMove(e) {
   let mouseX = getMousePos(c3, e).x;
-  if (mouseX > 12 && mouseX < 488) {
+  if (mouseX > 29 && mouseX < 471) {
     batX = mouseX + 50;
   }
 }
