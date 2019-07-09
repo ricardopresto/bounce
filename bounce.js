@@ -13,6 +13,7 @@ const c1 = document.getElementById("canvas1"),
   soundIcon = document.getElementById("soundIcon");
 
 soundBtn.addEventListener("click", soundBtnClick);
+startbtn.addEventListener("click", startBtnClick);
 
 let size;
 
@@ -46,7 +47,8 @@ let boundary = 14;
 let brickWidth = (600 - boundary * 2) / 12;
 let brickHeight = brickWidth / 2.4;
 let wallTop = brickHeight * 3;
-let batX = 200;
+let batX = 300;
+
 let soundOn = true;
 
 c3.addEventListener("mousemove", batMove);
@@ -314,4 +316,10 @@ drawBricks();
 drawBat();
 drawBall();
 
-//setInterval(moveBall, 0);
+function startBtnClick() {
+  batX = 300;
+  x = 60;
+  y = 300;
+  xDir = 1;
+  setInterval(moveBall, 0);
+}
