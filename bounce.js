@@ -40,8 +40,9 @@ window.onresize = setSize;
 let x = 60;
 let y = 300;
 let r = 6;
-let xDir = 1;
-let yDir = 1;
+let speed = 1.5;
+let xDir = speed;
+let yDir = speed;
 let rows = 9;
 let boundary = 14;
 let brickWidth = (600 - boundary * 2) / 12;
@@ -52,9 +53,13 @@ let batX = 300;
 let soundOn = true;
 
 c3.addEventListener("mousemove", batMove);
+window.addEventListener("touchmove", batTouchMove);
+window.addEventListener("touchstart", batTouchMove);
 
 let beep1 = document.getElementById("beep1");
 let beep2 = document.getElementById("beep2");
+let beepFail = document.getElementById("beepFail");
+let beepSuccess = document.getElementById("beepSuccess");
 
 function beep1Play() {
   beep1.currentTime = 0;
@@ -64,6 +69,16 @@ function beep1Play() {
 function beep2Play() {
   beep2.currentTime = 0;
   beep2.play();
+}
+
+function beepFailPlay() {
+  beepFail.currentTime = 0;
+  beepFail.play();
+}
+
+function beepSuccessPlay() {
+  beepSuccess.currentTime = 0;
+  beepSuccess.play();
 }
 
 ctx.beginPath();
@@ -91,18 +106,27 @@ ctxTop.moveTo(600 - boundary / 2, boundary / 2);
 ctxTop.lineTo(600 - boundary / 2, 600 - boundary * 2);
 ctxTop.stroke();
 
-let bricks = [];
+drawBat();
 
-function Brick(x, y, width, height, index, hit = false) {
-  this.x = x;
-  this.y = y;
-  this.width = width;
-  this.height = height;
-  this.index = index;
-  this.hit = hit;
+let bricks;
+
+class Brick {
+  constructor(x, y, width, height, index, hit = false) {
+    this.x = x;
+    this.y = y;
+    this.width = width;
+    this.height = height;
+    this.index = index;
+    this.hit = hit;
+  }
 }
 
-function drawBricks() {
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function drawBricks() {
+  bricks = [];
   let index = 1;
   let i = 0.00392;
   for (let row = 0; row < rows; row++) {
@@ -134,6 +158,7 @@ function drawBricks() {
       b.index = index;
       bricks.push(b);
       index = index + 1;
+      await sleep(20);
     }
   }
 }
@@ -192,8 +217,16 @@ function check(x, y, r) {
   return { left, right, above, below };
 }
 
-function moveBall() {
+function gameLoop() {
+  moveBall();
   drawBat();
+  if (y > 650) {
+    soundOn ? beepFailPlay() : null;
+    clearInterval(loop);
+  }
+}
+
+function moveBall() {
   ctxB.beginPath();
   ctxB.clearRect(0, 0, c3.width, c3.height);
   x = x + xDir;
@@ -204,7 +237,7 @@ function moveBall() {
 
   if (yDir > 0) {
     if (checked.below.includes("255,0,0")) {
-      soundOn ? beep1Play() : null;
+      soundOn ? beep2Play() : null;
       yDir = yDir * -1;
       if (x > batX - 50 - r && x < batX - 50 + r && xDir > 0) {
         xDir = xDir * -1;
@@ -250,11 +283,11 @@ function moveBall() {
 }
 
 function hitBrick(checkArray) {
-  soundOn ? beep2Play() : null;
+  soundOn ? beep1Play() : null;
   for (let brick of bricks) {
     if (checkArray.includes(`${brick.index}`)) {
-      ctx.clearRect(brick.x, brick.y, brick.width, brick.height);
-      ctxTop.clearRect(brick.x, brick.y, brick.width, brick.height);
+      ctx.clearRect(brick.x, brick.y - 1, brick.width, brick.height + 1);
+      ctxTop.clearRect(brick.x, brick.y - 1, brick.width, brick.height + 1);
       brick.hit = true;
       bricks = bricks.filter(function(b) {
         return b.hit == false;
@@ -262,9 +295,10 @@ function hitBrick(checkArray) {
     }
   }
   if (bricks.length == 0) {
-    x = 60;
-    y = 300;
-    drawBricks();
+    ctxB.clearRect(0, 0, c3.width, c3.height);
+    clearInterval(loop);
+    soundOn ? beepSuccessPlay() : null;
+    startBtnClick();
   }
 }
 
@@ -295,6 +329,17 @@ function batMove(e) {
   }
 }
 
+function batTouchMove(e) {
+  e.preventDefault();
+  if (e.targetTouches.length == 1) {
+    let touch = e.targetTouches[0];
+    let touchX = getMousePos(c3, touch).x;
+    if (touchX > 79 && touchX < 521) {
+      batX = touchX;
+    }
+  }
+}
+
 function getMousePos(canvas, evt) {
   var rect = canvas.getBoundingClientRect(),
     scaleX = canvas.width / rect.width,
@@ -312,14 +357,15 @@ function soundBtnClick() {
   soundIcon.classList.toggle("fa-volume-mute");
 }
 
-drawBricks();
-drawBat();
-drawBall();
-
-function startBtnClick() {
+async function startBtnClick() {
+  ctxTop.clearRect(boundary, boundary, c3.width - boundary * 2, c3.height);
+  ctx.clearRect(boundary, boundary, c2.width - boundary * 2, c2.height);
   batX = 300;
+  drawBat();
+  await drawBricks();
   x = 60;
   y = 300;
-  xDir = 1;
-  setInterval(moveBall, 0);
+  xDir = speed;
+  yDir = speed;
+  window.loop = setInterval(gameLoop, 0);
 }
