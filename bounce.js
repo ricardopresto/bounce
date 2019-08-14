@@ -1,11 +1,11 @@
 import { drawBrick } from "./drawBrick.js";
 
 const c1 = document.getElementById("canvas1"),
-  ctxB = c1.getContext("2d"),
+  ctxB = c1.getContext("2d"), //canvas for ball
   c2 = document.getElementById("canvas2"),
-  ctx = c2.getContext("2d"),
+  ctx = c2.getContext("2d"), //canvas for hidden bricks, bat and boundary wall
   c3 = document.getElementById("canvas3"),
-  ctxTop = c3.getContext("2d"),
+  ctxTop = c3.getContext("2d"), //canvas for visible bricks, bat and boundary wall
   container = document.getElementById("container"),
   buttons = document.getElementById("buttons"),
   soundBtn = document.getElementById("sound"),
@@ -14,6 +14,9 @@ const c1 = document.getElementById("canvas1"),
 
 soundBtn.addEventListener("click", soundBtnClick);
 startbtn.addEventListener("click", startBtnClick);
+window.addEventListener("mousemove", batMove);
+window.addEventListener("touchmove", batTouchMove);
+window.addEventListener("touchstart", batTouchMove);
 
 let size;
 
@@ -38,23 +41,19 @@ setSize();
 window.onresize = setSize;
 
 let x = 60;
-let y = 300;
-let r = 6;
-let speed = 1.5;
+let y = 300; //ball co-ordinates
+let r = 6; //ball radius
+let speed = 1.5; //ball speed
 let xDir = speed;
 let yDir = speed;
-let rows = 9;
-let boundary = 14;
+let rows = 9; //brick rows
+let boundary = 14; //boundary wall width
 let brickWidth = (600 - boundary * 2) / 12;
 let brickHeight = brickWidth / 2.4;
 let wallTop = brickHeight * 3;
 let batX = 300;
 
 let soundOn = true;
-
-c3.addEventListener("mousemove", batMove);
-window.addEventListener("touchmove", batTouchMove);
-window.addEventListener("touchstart", batTouchMove);
 
 let beep1 = document.getElementById("beep1");
 let beep2 = document.getElementById("beep2");
@@ -81,6 +80,7 @@ function beepSuccessPlay() {
   beepSuccess.play();
 }
 
+//hidden boundary wall (red)
 ctx.beginPath();
 ctx.strokeStyle = "rgba(255, 0, 0, 1";
 ctx.lineWidth = "6";
@@ -90,6 +90,7 @@ ctx.lineTo(600 - (boundary - 3), boundary - 3);
 ctx.lineTo(600 - (boundary - 3), 600 - boundary * 2);
 ctx.stroke();
 
+//visible boundary wall (white)
 ctxTop.beginPath();
 ctxTop.strokeStyle = "rgba(255, 255, 255, 1)";
 ctxTop.lineCap = "round";
@@ -128,7 +129,7 @@ function sleep(ms) {
 async function drawBricks() {
   bricks = [];
   let index = 1;
-  let i = 0.00392;
+  let i = 0.00392; //RGBa transparency
   for (let row = 0; row < rows; row++) {
     let color = {
       main: `hsl(${row * 30}, 100%, 40%)`,
@@ -138,7 +139,7 @@ async function drawBricks() {
       bottom: `hsl(${row * 30}, 100%, 20%)`
     };
     for (let n = boundary; n < 600 - boundary * 2; n = n + brickWidth) {
-      ctx.fillStyle = `rgba(0,255,0,${i})`;
+      ctx.fillStyle = `rgba(0,255,0,${i})`; //green hidden bricks, variable transparency
       drawHiddenBrick(n, row);
       drawBrick(
         ctxTop,
@@ -228,7 +229,7 @@ function gameLoop() {
 
 function moveBall() {
   ctxB.beginPath();
-  ctxB.clearRect(0, 0, c3.width, c3.height);
+  ctxB.clearRect(x - (r + 2), y - (r + 2), r * 3, r * 3);
   x = x + xDir;
   y = y + yDir;
   drawBall();
@@ -240,10 +241,12 @@ function moveBall() {
       soundOn ? beep2Play() : null;
       yDir = yDir * -1;
       if (x > batX - 50 - r && x < batX - 50 + r && xDir > 0) {
+        //left end-of-bat bounce
         xDir = xDir * -1;
         return;
       }
       if (x > batX + 50 - r && x < batX + 50 + r && xDir < 0) {
+        //right end-of-bat bounce
         xDir = xDir * -1;
         return;
       }
@@ -310,13 +313,13 @@ function drawBat() {
 
   ctx.beginPath();
   ctx.moveTo(batX - 50, 570);
-  ctx.strokeStyle = "#f00";
+  ctx.strokeStyle = "#f00"; //red hidden bat
   ctx.lineCap = "round";
   ctx.lineTo(batX + 50, 570);
   ctx.stroke();
   ctxTop.beginPath();
   ctxTop.moveTo(batX - 50, 570);
-  ctxTop.strokeStyle = "#fff";
+  ctxTop.strokeStyle = "#fff"; //white visible bat
   ctxTop.lineCap = "round";
   ctxTop.lineTo(batX + 50, 570);
   ctxTop.stroke();
