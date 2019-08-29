@@ -18,6 +18,8 @@ window.addEventListener("mousemove", batMove);
 window.addEventListener("touchmove", batTouchMove);
 window.addEventListener("touchstart", batTouchMove);
 
+ctx.translate(0.5, 0.5);
+
 let size;
 
 const setSize = () => {
@@ -40,10 +42,10 @@ const setSize = () => {
 setSize();
 window.onresize = setSize;
 
-let x = 60;
+let x = Math.random() * 200 + 20;
 let y = 300; //ball co-ordinates
 let r = 6; //ball radius
-let speed = 1.5; //ball speed
+let speed = 2; //ball speed
 let xDir = speed;
 let yDir = speed;
 let rows = 9; //brick rows
@@ -139,7 +141,7 @@ async function drawBricks() {
       bottom: `hsl(${row * 30}, 100%, 20%)`
     };
     for (let n = boundary; n < 600 - boundary * 2; n = n + brickWidth) {
-      ctx.fillStyle = `rgba(0,255,0,${i})`; //green hidden bricks, variable transparency
+      ctx.fillStyle = `rgba(0, 255, 0, ${i})`; //green hidden bricks, variable transparency
       drawHiddenBrick(n, row);
       drawBrick(
         ctxTop,
@@ -172,9 +174,10 @@ function drawHiddenBrick(n, row) {
   ctx.lineTo(n, wallTop + row * brickHeight + brickHeight);
   ctx.closePath();
   ctx.fill();
+
   ctx.beginPath();
   ctx.strokeStyle = "#000";
-  ctx.lineWidth = "1";
+  ctx.lineWidth = "2";
   ctx.moveTo(n, wallTop + row * brickHeight);
   ctx.lineTo(n + brickWidth, wallTop + row * brickHeight);
   ctx.lineTo(n + brickWidth, wallTop + row * brickHeight + brickHeight);
@@ -251,7 +254,10 @@ function moveBall() {
         return;
       }
     }
-    if (checked.below.includes("0,255,0")) {
+    if (
+      checked.below.includes("0,255,0") ||
+      checked.below.includes("0,254,0") // 254 included for weird Firefox bug
+    ) {
       hitBrick(check(x, y, r).below);
       yDir = yDir * -1;
     }
@@ -260,7 +266,10 @@ function moveBall() {
     if (checked.above.includes("255,0,0")) {
       yDir = yDir * -1;
     }
-    if (checked.above.includes("0,255,0")) {
+    if (
+      checked.above.includes("0,255,0") ||
+      checked.above.includes("0,254,0")
+    ) {
       hitBrick(check(x, y, r).above);
       yDir = yDir * -1;
     }
@@ -269,7 +278,7 @@ function moveBall() {
     if (checked.left.includes("255,0,0")) {
       xDir = xDir * -1;
     }
-    if (checked.left.includes("0,255,0")) {
+    if (checked.left.includes("0,255,0") || checked.left.includes("0,254,0")) {
       hitBrick(check(x, y, r).left);
       xDir = xDir * -1;
     }
@@ -278,7 +287,10 @@ function moveBall() {
     if (checked.right.includes("255,0,0")) {
       xDir = xDir * -1;
     }
-    if (checked.right.includes("0,255,0")) {
+    if (
+      checked.right.includes("0,255,0") ||
+      checked.right.includes("0,254,0")
+    ) {
       hitBrick(check(x, y, r).right);
       xDir = xDir * -1;
     }
@@ -289,8 +301,13 @@ function hitBrick(checkArray) {
   soundOn ? beep1Play() : null;
   for (let brick of bricks) {
     if (checkArray.includes(`${brick.index}`)) {
-      ctx.clearRect(brick.x, brick.y - 1, brick.width, brick.height + 1);
-      ctxTop.clearRect(brick.x, brick.y - 1, brick.width, brick.height + 1);
+      ctx.clearRect(
+        brick.x - 1,
+        brick.y - 1,
+        brick.width + 2,
+        brick.height + 2
+      );
+      ctxTop.clearRect(brick.x, brick.y - 1, brick.width, brick.height + 2);
       brick.hit = true;
       bricks = bricks.filter(function(b) {
         return b.hit == false;
@@ -366,7 +383,7 @@ async function startBtnClick() {
   batX = 300;
   drawBat();
   await drawBricks();
-  x = 60;
+  x = Math.random() * 200 + 20;
   y = 300;
   xDir = speed;
   yDir = speed;
