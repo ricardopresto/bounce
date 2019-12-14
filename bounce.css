@@ -1,63 +1,120 @@
 * {
-  margin: 0;
-  padding: 0;
+	margin: 0;
+	padding: 0;
+}
+
+body {
+	background-color: #000;
 }
 
 #surround {
-  width: 100vw;
-  height: 100vh;
-  left: 0;
-  top: 0;
-  background-color: #000;
-  z-index: -1;
-  display: flex;
-  flex-flow: row wrap;
-  justify-content: center;
+	width: 100vw;
+	height: 100vh;
+	left: 0;
+	top: 0;
+	z-index: -1;
+	display: flex;
+	flex-flow: row;
+	justify-content: center;
+	align-items: center;
 }
 
 #buttons {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+}
+
+#buttons div {
+	color: #fff;
+	margin: 10px;
+	font-family: sans-serif;
 }
 
 button {
-  width: 100px;
-  height: 100px;
-  margin: 20px;
-  font-size: 2rem;
-  background-color: #000;
-  color: #fff;
-  border: 1px solid #fff;
-  border-radius: 8px;
+	width: 100px;
+	height: 100px;
+	margin: 20px;
+	font-size: 2rem;
+	background-color: #000;
+	color: #fff;
+	border: 1px solid #fff;
+	border-radius: 8px;
+}
+
+#speedSlider {
+	-webkit-appearance: none;
+	width: 100px;
+	height: 12px;
+	background: #000;
+	outline: none;
+	border: 1px solid #fff;
+	border-radius: 6px;
+}
+
+#speedSlider::-webkit-slider-thumb {
+	-webkit-appearance: none;
+	appearance: none;
+	width: 12px;
+	height: 12px;
+	border-radius: 6px;
+	background: #fff;
+	cursor: pointer;
+}
+
+#speedSlider::-moz-range-thumb {
+	width: 12px;
+	height: 12px;
+	border-radius: 6px;
+	background: #fff;
+	cursor: pointer;
 }
 
 #start {
-  align-self: center;
+	align-self: center;
 }
 
 #sound {
-  align-self: center;
+	align-self: center;
 }
 
 #container {
-  margin-top: 20px;
-  cursor: none;
-  position: relative;
+	margin-top: 20px;
+	cursor: none;
+	position: relative;
 }
 
 canvas {
-  position: absolute;
+	position: absolute;
 }
 
 #canvas1 {
-  z-index: 0;
+	z-index: 0;
 }
 
 #canvas2 {
-  z-index: 1;
+	z-index: 1;
 }
 
 #canvas3 {
-  z-index: 2;
+	z-index: 2;
+}
+
+@media screen and (max-width: 820px) {
+	#buttons {
+		flex-direction: row;
+	}
+	#surround {
+		flex-direction: column;
+	}
+}
+
+@media only screen and (orientation: portrait) {
+	#buttons {
+		flex-direction: row;
+	}
+	#surround {
+		flex-direction: column;
+	}
 }

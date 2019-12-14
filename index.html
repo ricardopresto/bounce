@@ -1,27 +1,35 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <script src="https://kit.fontawesome.com/6d9113b59f.js"></script>
-    <link href="./bounce.css" rel="stylesheet" />
-  </head>
-  <body>
-    <div id="surround">
-      <div id="container">
-        <canvas id="canvas1" width="600" height="600"></canvas>
-        <canvas id="canvas2" width="600" height="600"></canvas>
-        <canvas id="canvas3" width="600" height="600"></canvas>
-      </div>
-      <div id="buttons">
-        <button id="start"><i class="fas fa-play"></i></button>
-        <button id="sound">
-          <i id="soundIcon" class="fas fa-volume-up"></i>
-        </button>
+
+<head>
+  <script src="https://kit.fontawesome.com/6d9113b59f.js"></script>
+  <link href="./bounce.css" rel="stylesheet" />
+</head>
+
+<body>
+  <div id="surround">
+    <div id="container">
+      <canvas id="canvas1" width="600" height="600"></canvas>
+      <canvas id="canvas2" width="600" height="600"></canvas>
+      <canvas id="canvas3" width="600" height="600"></canvas>
+    </div>
+    <div id="buttons">
+      <button id="start"><i class="fas fa-play"></i></button>
+      <button id="sound">
+        <i id="soundIcon" class="fas fa-volume-up"></i>
+      </button>
+      <div id="speedcontrol">
+        <input type="range" id="speedSlider" min="1" max="6" value="2" />
+        <div>-&ensp;Speed&ensp;+</div>
       </div>
     </div>
-    <audio id="beep1" src="./sounds/beep1.mp3"></audio>
-    <audio id="beep2" src="./sounds/beep2.mp3"></audio>
-    <audio id="beepFail" src="./sounds/fail.mp3"></audio>
-    <audio id="beepSuccess" src="./sounds/success.mp3"></audio>
-    <script src="./bounce.js" type="module"></script>
-  </body>
+  </div>
+  </div>
+  <audio id="beep1" src="./sounds/beep1.mp3"></audio>
+  <audio id="beep2" src="./sounds/beep2.mp3"></audio>
+  <audio id="beepFail" src="./sounds/fail.mp3"></audio>
+  <audio id="beepSuccess" src="./sounds/success.mp3"></audio>
+  <script src="./bounce.js" type="module"></script>
+</body>
+
 </html>
